@@ -1,6 +1,7 @@
 import express from "express";
 import morgan from "morgan";
 import cors from "cors";
+import sequelize from "./db/dbConnection.js";
 
 import contactsRouter from "./routes/contactsRouter.js";
 
@@ -24,3 +25,11 @@ app.use((err, req, res, next) => {
 app.listen(3000, () => {
   console.log("Server is running. Use our API on port: 3000");
 });
+
+try {
+  await sequelize.authenticate();
+  console.log("✅ Database connection successful")
+} catch (e) {
+  console.log("❌ Database connection error: ", e)
+  process.exit(1)
+}
