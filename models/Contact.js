@@ -1,13 +1,23 @@
 import sequelize from "../db/dbConnection.js";
-import {DataTypes} from "sequelize";
+import {DataTypes, Model} from "sequelize";
+import User from "./user.js";
 
-const Contact = sequelize.define(
-    'contact', {
-        id: {
-            type: DataTypes.UUID,
-            defaultValue: DataTypes.UUIDV4,
-            primaryKey: true,
-        },
+
+class Contact extends Model {
+    toPublicJSON() {
+        return {
+            id: this.id,
+            name: this.name,
+            email: this.email,
+            phone: this.phone,
+            favorite: this.favorite,
+            createdAt: this.createdAt,
+            updatedAt: this.updatedAt,
+        };
+    }
+}
+
+Contact.init({
         name: {
             type: DataTypes.STRING,
             allowNull: false,
@@ -15,6 +25,7 @@ const Contact = sequelize.define(
         email: {
             type: DataTypes.STRING,
             allowNull: false,
+            match: /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/
         },
         phone: {
             type: DataTypes.STRING,
@@ -23,7 +34,22 @@ const Contact = sequelize.define(
         favorite: {
             type: DataTypes.BOOLEAN,
             defaultValue: false,
-        }
-    })
+        },
+        owner: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+            references: {
+                model: User,
+                key: 'id',
+            },
+            onUpdate: 'CASCADE',
+            onDelete: 'CASCADE',
+        },
+    },
+    {
+        sequelize,
+        modelName: "contact",
+        tableName: "contacts",
+    });
 
 export default Contact;

@@ -1,77 +1,74 @@
-import * as contactsService from "../services/contactsServices.js";
-import {createContactSchema, updateContactSchema, updateFavoriteSchema} from "../schemas/contactsSchemas.js";
+import contactsService from "../services/contactsServices.js";
+import HttpError from "../helpers/HttpError.js";
+import handleIssues from "../decorators/issuesWrapper.js";
 
-export const getAllContacts = async (req, res, next) => {
-    try {
-        const result = await contactsService.listContacts();
-        res.json(result);
-    } catch (error) {
-        next(error);
-    }
+const getAllContacts = async (req, res) => {
+    const {id} = req.user;
+    const filter = {owner: id};
+
+    const contacts = await contactsService.listContacts(filter);
+
+    res.json(contacts);
 };
 
 
-export const getOneContact = async (req, res, next) => {
-    try {
-        const {id} = req.params;
-        const result = await contactsService.getContactById(id)
-        if (!result) return null;
-
-        res.json(result);
-    } catch (error) {
-        next(error);
-    }
-};
-
-export const deleteContact = async (req, res, next) => {
-    try {
-        const {id} = req.params;
-        const result = await contactsService.removeContact(id);
-        if (!result) return null;
-
-        res.json(result);
-
-    } catch (error) {
-        next(error);
-    }
-};
-
-export const createContact = async (req, res, next) => {
-        try {
-            const {error} = createContactSchema.validate(req.body);
-            if (error) return null;
-            const result = await contactsService.addContact(req.body);
-
-            res.status(201).json(result);
-        } catch (error) {
-            next(error);
-        }
-    }
-;
-
-export const updateContact = async (req, res, next) => {
-    try {
-        const {error} = updateContactSchema.validate(req.body);
-        if (error) return null;
-
-        const {id} = req.params;
-        const result = await contactsService.updateContact(id, req.body);
-        if (!result) return null;
-
-        res.json(result);
-    } catch (error) {
-        next(error);
-    }
-};
-
-export const updateFavoriteStatus = async (req, res) => {
-    const {error} = updateFavoriteSchema.validate(req.body);
-    if (error) return null;
-
+const getOneContact = async (req, res) => {
     const {id} = req.params;
-    const {favorite} = req.body;
-    const result = await contactsService.updateContact(id, {favorite});
-    if (!result) return null;
-
-    res.status(200).json(result);
+    const {id: owner} = req.user;
+    const contact = await contactsService.getContactById({id, owner})
+    if (!contact) {
+        throw HttpError(404);
+    }
+    res.json(contact);
 };
+
+const createContact = async (req, res) => {
+    const {id} = req.user;
+    const contact = await contactsService.addContact({...req.body, owner: id});
+
+    res.status(201).json(contact);
+};
+
+const updateContact = async (req, res) => {
+    const {id} = req.params;
+    const {id: owner} = req.user;
+    const contact = await contactsService.updateContact({id, owner}, req.body);
+    if (!contact) {
+        throw HttpError(404);
+    }
+
+    res.json(contact);
+};
+
+
+const updateFavoriteStatus = async (req, res) => {
+    const {id} = req.params;
+    const {id: owner} = req.user;
+    const {favorite} = req.body;
+    const contact = await contactsService.updateStatusContact({id, owner}, {favorite});
+    if (!contact) {
+        throw HttpError(404);
+    }
+
+    res.status(200).json(contact);
+};
+
+const deleteContact = async (req, res) => {
+    const {id} = req.params;
+    const {id: owner} = req.user;
+    const contact = await contactsService.removeContact({id, owner});
+    if (!contact) {
+        throw HttpError(404);
+    }
+
+    res.json(contact);
+};
+
+export default {
+    getAllContacts: handleIssues(getAllContacts),
+    getOneContact: handleIssues(getOneContact),
+    createContact: handleIssues(createContact),
+    updateContact: handleIssues(updateContact),
+    updateFavoriteStatus: handleIssues(updateFavoriteStatus),
+    deleteContact: handleIssues(deleteContact),
+}

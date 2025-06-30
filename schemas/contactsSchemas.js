@@ -1,13 +1,13 @@
 import Joi from "joi";
 
-export const createContactSchema = Joi.object({
+const createContactSchema = Joi.object({
     name: Joi.string().required(),
     email: Joi.string().required().email({tlds: {allow: false}}),
     phone: Joi.string().required(),
     favorite: Joi.boolean()
 })
 
-export const updateContactSchema = Joi.object({
+const updateContactSchema = Joi.object({
     name: Joi.string(),
     email: Joi.string().email({tlds: {allow: false}}),
     phone: Joi.string(),
@@ -16,6 +16,12 @@ export const updateContactSchema = Joi.object({
     "object.min": "Body must have at least one field",
 });
 
-export const updateFavoriteSchema = Joi.object({
+const updateFavoriteSchema = Joi.object({
     favorite: Joi.boolean().required(),
 });
+
+export default {
+    createContactSchema,
+    updateContactSchema,
+    updateFavoriteSchema,
+};

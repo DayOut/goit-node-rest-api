@@ -4,6 +4,7 @@ import cors from "cors";
 import sequelize from "./db/dbConnection.js";
 
 import contactsRouter from "./routes/contactsRouter.js";
+import authRouter from "./routes/authRouter.js";
 
 const app = express();
 
@@ -11,6 +12,7 @@ app.use(morgan("tiny"));
 app.use(cors());
 app.use(express.json());
 
+app.use("/api/auth", authRouter);
 app.use("/api/contacts", contactsRouter);
 
 app.use((_, res) => {
@@ -29,6 +31,9 @@ app.listen(3000, () => {
 try {
   await sequelize.authenticate();
   console.log("✅ Database connection successful")
+
+  // await sequelize.sync({ alter: true });
+  // console.log("✅ All models were synchronized");
 } catch (e) {
   console.log("❌ Database connection error: ", e)
   process.exit(1)
