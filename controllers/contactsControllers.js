@@ -1,5 +1,5 @@
 import contactsService from "../services/contactsServices.js";
-import HttpError from "../helpers/HttpError.js";
+import HttpError from "../helpers/httpError.js";
 import handleIssues from "../decorators/issuesWrapper.js";
 
 const getAllContacts = async (req, res) => {

@@ -1,4 +1,4 @@
-import HttpError from "../helpers/HttpError.js";
+import HttpError from "../helpers/httpError.js";
 import { findUser } from "../services/authServices.js";
 import { verifyToken } from "../helpers/jwt.js";
 

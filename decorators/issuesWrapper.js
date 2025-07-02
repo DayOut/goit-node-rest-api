@@ -1,7 +1,7 @@
 import {UniqueConstraintError, ValidationError} from "sequelize";
 
-const handleIssues = ctrl => {
-    return async (req, res, next) => {
+const handleIssues = ctrl =>
+    async (req, res, next) => {
         try {
             await ctrl(req, res, next);
         } catch (error) {
@@ -14,7 +14,6 @@ const handleIssues = ctrl => {
             }
             next(error);
         }
-    };
-}
+    }
 
 export default handleIssues;
