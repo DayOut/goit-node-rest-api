@@ -34,6 +34,7 @@ User.init(
             type: DataTypes.STRING,
             defaultValue: null,
         },
+        avatarURL: DataTypes.STRING,
     },
     {
         sequelize,
