@@ -1,4 +1,5 @@
 import {UniqueConstraintError, ValidationError} from "sequelize";
+const {NODE_ENV} = process.env;
 
 const handleIssues = ctrl =>
     async (req, res, next) => {
@@ -12,7 +13,14 @@ const handleIssues = ctrl =>
             if (error instanceof UniqueConstraintError) {
                 error.status = 409;
             }
-            next(error);
+
+            const status = error.status || 500;
+            res.status(status).json({
+                status: "error",
+                code: status,
+                message: error.message,
+                ...(NODE_ENV === 'development' && { stack: error.stack })
+            });
         }
     }
 
