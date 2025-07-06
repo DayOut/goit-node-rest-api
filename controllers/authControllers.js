@@ -58,6 +58,23 @@ export const updateAvatar = async (req, res) => {
     }
 };
 
+const verifyController = async (req, res) => {
+    const {verificationToken} = req.params;
+    await authServices.verifyUser(verificationToken);
+
+    res.json({
+        message: "Verification successful"
+    })
+}
+
+const resendVerifyController = async (req, res) => {
+    await authServices.resendVerifyUser(req.body.email);
+
+    res.json({
+        message: "Verification email sent"
+    })
+}
+
 export default {
     register: handleIssues(register),
     login: handleIssues(login),
@@ -65,4 +82,6 @@ export default {
     getCurrent: handleIssues(getCurrent),
     updateSubscription: handleIssues(updateSubscription),
     updateAvatar: handleIssues(updateAvatar),
+    verifyController: handleIssues(verifyController),
+    resendVerifyController: handleIssues(resendVerifyController),
 };

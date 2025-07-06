@@ -35,6 +35,13 @@ User.init(
             defaultValue: null,
         },
         avatarURL: DataTypes.STRING,
+        verify: {
+            type: DataTypes.BOOLEAN,
+            defaultValue: false,
+        },
+        verificationToken: {
+            type: DataTypes.STRING,
+        },
     },
     {
         sequelize,
